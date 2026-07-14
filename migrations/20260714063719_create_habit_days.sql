@@ -1,0 +1,10 @@
+-- Add migration script here
+
+CREATE TABLE IF NOT EXISTS habit_days (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    habit_id INTEGER NOT NULL,
+    day INTEGER NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
+);
