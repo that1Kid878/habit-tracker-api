@@ -14,9 +14,8 @@ pub struct Habit {
 
 #[derive(Serialize, Deserialize, Clone, sqlx::FromRow)]
 pub struct HabitLog {
-    pub id: i64,
+    pub id: Option<i64>,
     pub habit_id: i64,
-    pub day: i64,
     pub completed: bool,
     pub created_at: NaiveDateTime,
 }

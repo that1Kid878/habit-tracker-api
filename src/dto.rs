@@ -1,3 +1,5 @@
+use chrono::NaiveDate;
+
 pub struct CreateHabitRequest {
     pub username: String,
     pub name: String,
@@ -12,4 +14,15 @@ pub struct EditHabitRequest {
     pub description: Option<String>,
     pub priority: Option<i64>,
     pub days: Option<Vec<i64>>,
+}
+
+pub struct CreateHabitLogRequest {
+    pub habit_id: i64,
+    pub completed: bool,
+}
+
+pub struct GetHabitLogByScopeRequest {
+    pub habit_id: i64,
+    pub from: NaiveDate,
+    pub to: NaiveDate,
 }
