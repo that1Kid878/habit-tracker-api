@@ -1,0 +1,12 @@
+cat > .dockerignore << 'EOF'
+target/
+.env
+.git/
+.gitignore
+.vscode/
+.idea/
+README.md
+*.log
+Dockerfile
+.dockerignore
+EOF

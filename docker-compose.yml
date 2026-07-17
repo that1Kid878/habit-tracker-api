@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    image: habit-tracker-api:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - RUST_BACKTRACE=1
+      - DATABASE_URL=sqlite:///app/data/local.db
+    restart: unless-stopped
+
+volumes:
+  db_data:
+    driver: local
