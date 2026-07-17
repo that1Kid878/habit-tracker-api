@@ -21,8 +21,20 @@ pub struct CreateHabitLogRequest {
     pub completed: bool,
 }
 
-pub struct GetHabitLogByScopeRequest {
-    pub habit_id: i64,
-    pub from: NaiveDate,
-    pub to: NaiveDate,
+pub struct GetHabitLogQuery {
+    pub username: String,
+    pub id: Option<i64>,
+    pub habit_id: Option<i64>,
+    pub from: Option<NaiveDate>,
+    pub to: Option<NaiveDate>,
+    pub limit: i64,
+}
+
+pub struct GetHabitQuery {
+    pub id: Option<i64>,
+    pub name: Option<String>,
+    pub username: String,
+    pub day: Option<i64>,
+    pub priority: Option<i64>,
+    pub limit: i64,
 }

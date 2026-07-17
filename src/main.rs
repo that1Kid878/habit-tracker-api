@@ -1,4 +1,6 @@
 mod dto;
+mod errors;
+mod handler;
 mod models;
 mod repos;
 mod responses;
