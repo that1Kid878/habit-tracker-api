@@ -1,7 +1,7 @@
-use sqlx::{Sqlite, SqlitePool, Transaction, query, query_as};
+use sqlx::{AssertSqlSafe, QueryBuilder, Sqlite, SqlitePool, Transaction, query, query_as};
 
 use crate::{
-    dto::{CreateHabitRequest, EditHabitRequest},
+    dto::{CreateHabitRequest, EditHabitRequest, GetHabitQuery},
     models::Habit,
 };
 
@@ -14,32 +14,34 @@ impl HabitRepo {
         Self { pool }
     }
 
-    pub async fn get_by_username(&self, username: &str) -> Result<Vec<Habit>, sqlx::Error> {
-        let habits = query_as!(Habit, "SELECT * FROM habits WHERE username = ?", username)
-            .fetch_all(&self.pool)
-            .await?;
-        Ok(habits)
-    }
+    pub async fn get(&self, payload: GetHabitQuery) -> Result<Vec<Habit>, sqlx::Error> {
+        let mut builder = QueryBuilder::<Sqlite>::new("SELECT * FROM habits WHERE username = ?");
+        builder.push_bind(payload.username);
 
-    pub async fn get_by_id(&self, id: i64) -> Result<Habit, sqlx::Error> {
-        let habit = query_as!(Habit, "SELECT * FROM habits WHERE id = ?", id)
-            .fetch_one(&self.pool)
-            .await?;
-        Ok(habit)
-    }
+        if let Some(id) = payload.id {
+            builder.push("AND id = ?");
+            builder.push_bind(id.to_string());
+        }
 
-    pub async fn get_by_day(&self, day: i32) -> Result<Vec<Habit>, sqlx::Error> {
-        let habits = query_as!(
-            Habit,
-            r#"
-            SELECT habits.* FROM habits
-            INNER JOIN habit_days ON habits.id = habit_days.habit_id
-            WHERE habit_days.day = ?
-            "#,
-            day
-        )
-        .fetch_all(&self.pool)
-        .await?;
+        if let Some(name) = payload.name {
+            builder.push("AND name LIKE ?");
+            builder.push_bind(format!("%{}%", name));
+        }
+
+        if let Some(priority) = payload.priority {
+            builder.push("AND priority = ?");
+            builder.push_bind(priority.to_string());
+        }
+
+        if let Some(day) = payload.day {
+            builder.push("AND id IN (SELECT habit_id FROM habit_days WHERE day = ?");
+            builder.push_bind(day.to_string());
+        }
+
+        builder.push("LIMIT ?");
+        builder.push_bind(payload.limit.to_string());
+
+        let habits = builder.build_query_as().fetch_all(&self.pool).await?;
         Ok(habits)
     }
 
