@@ -7,7 +7,8 @@ services:
     volumes:
       - ./data:/app/data
     environment:
-      - DATABASE_URL=sqlite:/app/data/local.db
+      - RUST_BACKTRACE=1
+      - DATABASE_URL=sqlite:///app/data/local.db
     restart: unless-stopped
 
 volumes:

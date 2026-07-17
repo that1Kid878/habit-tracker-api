@@ -24,11 +24,11 @@ use crate::{
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let database_url = env::var("DA TABASE_URL").unwrap_or_else(|_| {
+    let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| {
         println!("Unable to use .env's DATABASE_URL, using memory...");
         "sqlite::memory:".to_string()
     });
-    println!("Database URL recieved");
+    println!("Database URL recieved: {}", database_url);
 
     let pool = SqlitePoolOptions::new()
         .max_connections(5)
