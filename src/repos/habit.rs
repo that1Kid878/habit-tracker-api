@@ -70,7 +70,7 @@ impl HabitRepo {
     pub async fn edit(&self, payload: EditHabitRequest) -> Result<(), sqlx::Error> {
         println!("{:?}", payload);
         let mut tx = self.pool.begin().await?;
-        query!(
+        let result = query!(
             r#"
             UPDATE habits
             SET name = COALESCE(?, name),
@@ -85,6 +85,8 @@ impl HabitRepo {
         )
         .execute(&mut *tx)
         .await?;
+
+        println!("Rows affected: {}", result.rows_affected());
 
         if payload.days.is_some() {
             self.delete_days(payload.id, &mut tx).await?;
