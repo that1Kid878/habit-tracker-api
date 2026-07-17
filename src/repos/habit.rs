@@ -69,13 +69,17 @@ impl HabitRepo {
 
     pub async fn edit(&self, payload: EditHabitRequest) -> Result<(), sqlx::Error> {
         println!("{:?}", payload);
-        let mut tx = self.pool.begin().await?;
+        let mut tx = match self.pool.begin().await {
+            Ok(tx) => tx,
+            Err(e) => {
+                println!("Transaction failed: {}", e);
+                return Err(sqlx::Error::PoolClosed);
+            }
+        };
         query!(
             r#"
             UPDATE habits
-            SET name = COALESCE(?, name),
-                description = COALESCE(?, description),
-                priority = COALESCE(?, priority)
+            SET name = COALESCE(?, name), description = COALESCE(?, description), priority = COALESCE(?, priority)
             WHERE id = ?
             "#,
             payload.name,

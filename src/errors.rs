@@ -4,6 +4,7 @@ use crate::responses::AppError;
 
 impl From<sqlx::Error> for AppError {
     fn from(err: sqlx::Error) -> Self {
+        println!("ERROR CAUGHT");
         match err {
             sqlx::Error::RowNotFound => AppError::NotFound {
                 message: format!("Row was not found: {}", err),
