@@ -1,8 +1,8 @@
 use chrono::NaiveDate;
-use sqlx::{SqlitePool, query, query_as};
+use sqlx::{QueryBuilder, Sqlite, SqlitePool, query, query_as};
 
 use crate::{
-    dto::{CreateHabitLogRequest, GetHabitLogByScopeRequest},
+    dto::{CreateHabitLogRequest, GetHabitLogQuery},
     models::HabitLog,
 };
 
@@ -15,38 +15,38 @@ impl HabitLogRepo {
         Self { pool }
     }
 
-    pub async fn get_by_id(&self, id: i64) -> Result<HabitLog, sqlx::Error> {
-        let log = query_as!(HabitLog, "SELECT * FROM habits_log WHERE id = ?", id)
-            .fetch_one(&self.pool)
-            .await?;
-        Ok(log)
-    }
+    pub async fn get(&self, payload: GetHabitLogQuery) -> Result<Vec<HabitLog>, sqlx::Error> {
+        let mut builder = QueryBuilder::<Sqlite>::new(
+            "SELECT * FROM habits_log WHERE habit_id IN (SELECT id FROM habits WHERE username = ",
+        );
+        builder.push_bind(payload.username);
+        builder.push(")");
 
-    pub async fn get_by_date(&self, id: i64, date: NaiveDate) -> Result<HabitLog, sqlx::Error> {
-        let log = query_as!(
-            HabitLog,
-            "SELECT * FROM habits_log WHERE id = ? AND DATE(created_at) = DATE(?)",
-            id,
-            date
-        )
-        .fetch_one(&self.pool)
-        .await?;
-        Ok(log)
-    }
+        if let Some(id) = payload.id {
+            builder.push("AND id = ");
+            builder.push_bind(id.to_string());
+        }
 
-    pub async fn get_by_scope(
-        &self,
-        payload: GetHabitLogByScopeRequest,
-    ) -> Result<Vec<HabitLog>, sqlx::Error> {
-        let logs = query_as!(
-            HabitLog,
-            r#"SELECT * FROM habits_log WHERE id = ? AND DATE(created_at) BETWEEN DATE(?) AND DATE(?)"#,
-            payload.habit_id,
-            payload.to,
-            payload.from)
-        .fetch_all(&self.pool)
-        .await?;
-        Ok(logs)
+        if let Some(habit_id) = payload.habit_id {
+            builder.push("AND habit_id = ");
+            builder.push_bind(habit_id.to_string());
+        }
+
+        if let Some(to) = payload.to
+            && let Some(from) = payload.from
+        {
+            builder.push("AND DATE(created_at) BETWEEN DATE(");
+            builder.push_bind(to.to_string());
+            builder.push(") AND DATE(");
+            builder.push_bind(from.to_string());
+            builder.push(")");
+        }
+
+        builder.push("LIMIT ");
+        builder.push_bind(payload.limit.to_string());
+
+        let habits = builder.build_query_as().fetch_all(&self.pool).await?;
+        Ok(habits)
     }
 
     pub async fn create(&self, payload: CreateHabitLogRequest) -> Result<HabitLog, sqlx::Error> {
