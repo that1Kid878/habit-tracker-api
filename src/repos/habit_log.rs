@@ -16,6 +16,7 @@ impl HabitLogRepo {
     }
 
     pub async fn get(&self, payload: GetHabitLogQuery) -> Result<Vec<HabitLog>, sqlx::Error> {
+        println!("{:?}", payload);
         let mut builder = QueryBuilder::<Sqlite>::new(
             "SELECT * FROM habits_log WHERE habit_id IN (SELECT id FROM habits WHERE username = ",
         );
@@ -50,6 +51,7 @@ impl HabitLogRepo {
     }
 
     pub async fn create(&self, payload: CreateHabitLogRequest) -> Result<HabitLog, sqlx::Error> {
+        println!("{:?}", payload);
         let log = query_as!(
             HabitLog,
             r#"INSERT INTO habits_log (habit_id, completed) VALUES ( ?, ?) RETURNING *"#,
@@ -63,6 +65,7 @@ impl HabitLogRepo {
     }
 
     pub async fn delete(&self, id: i64) -> Result<(), sqlx::Error> {
+        println!("{}", id);
         query!(r#"DELETE FROM habits WHERE id = ?"#, id)
             .execute(&self.pool)
             .await?;

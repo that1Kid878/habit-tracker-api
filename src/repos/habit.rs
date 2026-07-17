@@ -16,6 +16,7 @@ impl HabitRepo {
     }
 
     pub async fn get(&self, payload: GetHabitQuery) -> Result<Vec<Habit>, sqlx::Error> {
+        println!("{:?}", payload);
         let mut builder = QueryBuilder::<Sqlite>::new("SELECT * FROM habits WHERE username = ");
         builder.push_bind(payload.username);
 
@@ -48,6 +49,7 @@ impl HabitRepo {
     }
 
     pub async fn create(&self, payload: CreateHabitRequest) -> Result<Habit, sqlx::Error> {
+        println!("{:?}", payload);
         let mut tx = self.pool.begin().await?;
 
         let habit = query_as!(
@@ -66,6 +68,7 @@ impl HabitRepo {
     }
 
     pub async fn edit(&self, payload: EditHabitRequest) -> Result<(), sqlx::Error> {
+        println!("{:?}", payload);
         let mut tx = self.pool.begin().await?;
         query!(
             r#"
@@ -93,6 +96,7 @@ impl HabitRepo {
     }
 
     pub async fn delete(&self, id: i64) -> Result<(), sqlx::Error> {
+        println!("{}", id);
         query!(r#"DELETE FROM habits WHERE id = ?"#, id)
             .execute(&self.pool)
             .await?;
