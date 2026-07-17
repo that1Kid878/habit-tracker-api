@@ -1,4 +1,3 @@
-use chrono::NaiveDate;
 use sqlx::{QueryBuilder, Sqlite, SqlitePool, query, query_as};
 
 use crate::{
@@ -6,6 +5,7 @@ use crate::{
     models::HabitLog,
 };
 
+#[derive(Clone)]
 pub struct HabitLogRepo {
     pool: SqlitePool,
 }

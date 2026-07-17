@@ -3,9 +3,9 @@ use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
 };
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 struct AppResponse<T: Serialize> {
     pub success: bool,
     pub message: Option<String>,

@@ -1,5 +1,7 @@
 use chrono::NaiveDate;
+use serde::{Deserialize, Serialize};
 
+#[derive(Deserialize, Serialize, Clone)]
 pub struct CreateHabitRequest {
     pub username: String,
     pub name: String,
@@ -8,6 +10,7 @@ pub struct CreateHabitRequest {
     pub days: Vec<i64>,
 }
 
+#[derive(Deserialize, Serialize, Clone)]
 pub struct EditHabitRequest {
     pub id: i64,
     pub name: Option<String>,
@@ -16,11 +19,13 @@ pub struct EditHabitRequest {
     pub days: Option<Vec<i64>>,
 }
 
+#[derive(Deserialize, Serialize, Clone)]
 pub struct CreateHabitLogRequest {
     pub habit_id: i64,
     pub completed: bool,
 }
 
+#[derive(Deserialize, Serialize, Clone)]
 pub struct GetHabitLogQuery {
     pub username: String,
     pub id: Option<i64>,
@@ -30,6 +35,7 @@ pub struct GetHabitLogQuery {
     pub limit: i64,
 }
 
+#[derive(Deserialize, Serialize, Clone)]
 pub struct GetHabitQuery {
     pub id: Option<i64>,
     pub name: Option<String>,

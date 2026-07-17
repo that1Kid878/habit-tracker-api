@@ -1,10 +1,11 @@
-use sqlx::{AssertSqlSafe, QueryBuilder, Sqlite, SqlitePool, Transaction, query, query_as};
+use sqlx::{QueryBuilder, Sqlite, SqlitePool, Transaction, query, query_as};
 
 use crate::{
     dto::{CreateHabitRequest, EditHabitRequest, GetHabitQuery},
     models::Habit,
 };
 
+#[derive(Clone)]
 pub struct HabitRepo {
     pool: SqlitePool,
 }
