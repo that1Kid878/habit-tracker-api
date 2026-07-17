@@ -11,7 +11,7 @@ pub struct HabitLogRepo {
 }
 
 impl HabitLogRepo {
-    pub async fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: SqlitePool) -> Self {
         Self { pool }
     }
 

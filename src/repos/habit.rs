@@ -10,7 +10,7 @@ pub struct HabitRepo {
 }
 
 impl HabitRepo {
-    pub async fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: SqlitePool) -> Self {
         Self { pool }
     }
 
