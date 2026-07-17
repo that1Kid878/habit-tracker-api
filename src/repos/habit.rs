@@ -83,7 +83,7 @@ impl HabitRepo {
         .execute(&mut *tx)
         .await?;
 
-        if payload.days.is_none() {
+        if payload.days.is_some() {
             self.delete_days(payload.id, &mut tx).await?;
             self.insert_days(payload.id, payload.days.unwrap(), &mut tx)
                 .await?;
