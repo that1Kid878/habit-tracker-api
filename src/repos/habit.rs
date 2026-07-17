@@ -15,27 +15,28 @@ impl HabitRepo {
     }
 
     pub async fn get(&self, payload: GetHabitQuery) -> Result<Vec<Habit>, sqlx::Error> {
-        let mut builder = QueryBuilder::<Sqlite>::new("SELECT * FROM habits WHERE username = ?");
+        let mut builder = QueryBuilder::<Sqlite>::new("SELECT * FROM habits WHERE username = ");
         builder.push_bind(payload.username);
 
         if let Some(id) = payload.id {
-            builder.push("AND id = ?");
+            builder.push("AND id = ");
             builder.push_bind(id.to_string());
         }
 
         if let Some(name) = payload.name {
-            builder.push("AND name LIKE ?");
+            builder.push("AND name LIKE ");
             builder.push_bind(format!("%{}%", name));
         }
 
         if let Some(priority) = payload.priority {
-            builder.push("AND priority = ?");
+            builder.push("AND priority = ");
             builder.push_bind(priority.to_string());
         }
 
         if let Some(day) = payload.day {
-            builder.push("AND id IN (SELECT habit_id FROM habit_days WHERE day = ?");
+            builder.push("AND id IN (SELECT habit_id FROM habit_days WHERE day = ");
             builder.push_bind(day.to_string());
+            builder.push(")");
         }
 
         builder.push("LIMIT ?");
