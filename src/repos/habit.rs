@@ -92,6 +92,7 @@ impl HabitRepo {
                 .await?;
         }
 
+        tx.commit().await?;
         Ok(())
     }
 
