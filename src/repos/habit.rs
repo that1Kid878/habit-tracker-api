@@ -39,7 +39,7 @@ impl HabitRepo {
             builder.push(")");
         }
 
-        builder.push("LIMIT ?");
+        builder.push("LIMIT ");
         builder.push_bind(payload.limit.to_string());
 
         let habits = builder.build_query_as().fetch_all(&self.pool).await?;
