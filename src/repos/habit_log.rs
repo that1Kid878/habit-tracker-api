@@ -66,7 +66,7 @@ impl HabitLogRepo {
 
     pub async fn delete(&self, id: i64) -> Result<(), sqlx::Error> {
         println!("{}", id);
-        query!(r#"DELETE FROM habits WHERE id = ?"#, id)
+        query!(r#"DELETE FROM habits_log WHERE id = ?"#, id)
             .execute(&self.pool)
             .await?;
 
